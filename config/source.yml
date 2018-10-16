@@ -1,0 +1,167 @@
+#company和relationShip数据来源
+mssql:
+  mssql://app:app127@10.10.15.44/CRDB
+  #mssql://app:app127@10.10.15.43/CRDB
+  #mssql://app:app127@10.10.13.17/CRDB
+
+#汇率转换数据来源
+mssql_rate:
+  mssql://app:app127@10.10.15.44/CentralDB_Stock
+
+#记录company和relationShip数据更新的timestamp
+redisUrl:
+  - redis://:finchina@10.17.205.190:6379/8
+  - redis://:finchina@10.17.205.190:6379/9
+  - redis://:finchina@10.17.205.190:6379/10
+
+#远程 server的服务器信息
+sshServer:
+  -
+    id: a
+    ips: 
+    - 10.17.205.190
+    port:
+      22
+    username:
+      root
+    password:
+      tcdept
+      #FINchina123
+    endpoint:
+      8529
+  -
+    id: b
+    ips: 
+      - 10.17.205.190
+    port:
+      22
+    username:
+      root
+    password:
+      tcdept
+    endpoint:
+      8539
+
+#各个SSH远程服务器相关文件及路径信息
+sshConfig:
+  csvFilePath:
+    - /home/arangodb_a/
+    - /home/arangodb_b/
+
+  csvFileName:
+    nodes:
+      company:
+        companies.csv
+      extra:
+        extraNodes.csv
+      person:
+        persons.csv
+    edges:
+      invest:
+        relations_invest.csv
+      guarantee:
+        relations_guarantee.csv
+      family:
+        relations_family.csv
+      execute: 
+        relations_execute.csv
+  #需要去重的数据文件
+  distinctFile:
+    - extraNodes.csv
+    - persons.csv
+
+#arangoimp的参数信息
+arangodbInfo:
+  nodeCollectionName:
+    'nodes'
+  databaseName:
+    'graphDB'
+  threads:
+    8
+    
+#全量和增量更新的控制标志
+updateFlag:
+  isUpdateInreComp:
+    'true'
+  isUpdateIncreRel:
+    'true'
+  isUpdateTotalComp:
+    'true'
+  isUpdateTotalRel:
+    'true'
+
+#增量/全量更新的id
+updateInfo:
+  companyId:
+    - TComp
+    - IComp
+  relationId_invest:
+    - TRel_invest
+    - IRel_invest
+  relationId_guarantee:
+    - TRel_guarantee
+    - IRel_guarantee
+  relationId_family:
+    - TRel_family
+    - IRel_family
+  relationId_executive:
+    - TRel_executive
+    - IRel_executive
+  relationId_holder:
+    - TRel_holder
+    - IRel_holder
+
+
+#ITCode2->ITName
+dictionaryServer:
+  host: 
+    10.10.15.129
+  port:
+    #8009
+    8010
+  path:
+    #/lookup
+    
+#定时触发全量更新时间
+schedule:
+  hour:
+    8
+  minute:
+    0
+
+#日志相关信息设置
+logInfo:
+  maxLogSize:
+    20480000
+
+#控制任务并发, 加锁机制信息
+lockInfo:
+  resource:
+    - 'locks:lockTimingUpdateTotalData'          #为timingUpdateTotalData方法加锁
+  TTL:
+    #- 600000
+    - 21600000                             #加锁时间, 设置6h
+
+#HAProxy配置信息
+haproxyInfo:
+  defaultServerName:
+    'arangodb_servers'
+  defaultServerIPs:
+    #- 10.15.44.229
+    - 10.10.15.129
+  defaultServerPort:
+    9999
+
+#redis发布与订阅信息
+redisPubSubInfo:
+  clientUrl:
+    - redis://:finchina@10.15.97.135:6679   #确保该redis的URL与每个查询程序的一致(消息订阅者)
+  channelsName:
+    - 'updateDataNews'
+  pubMessage:
+    - 'updateDataOver'
+
+
+
+
+
